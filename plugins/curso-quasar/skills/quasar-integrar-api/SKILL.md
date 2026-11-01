@@ -1,6 +1,6 @@
 ---
 name: quasar-integrar-api
-description: Padrão do curso para integrar a API (DRF + JWT) no front Quasar/Vue com TypeScript — base do axios, autenticação JWT (login, token, refresh, guard de rota) e recursos de CRUD (types-first, service HTTP sem estado, composable com ref no escopo do módulo, page com q-table paginado no servidor, dialog e Notify). Use sempre que for configurar o axios ou o login, integrar, criar ou alterar um endpoint, service, composable, tipo de API ou tela de CRUD, ou trocar um mock pela API real.
+description: Padrão do curso para integrar a API (DRF + JWT) no front Quasar/Vue com TypeScript — base do axios, autenticação JWT (login, token, refresh, guard de rota) e os recursos do curso com contrato e código reais (Categorias, Usuários, Clientes, Produtos e Estoque, indicadores do Dashboard, Cardápio do app), sempre types-first, service HTTP sem estado, composable com ref no escopo do módulo, page com q-table paginado no servidor, dialog e Notify. Use sempre que for configurar o axios ou o login, integrar, criar ou alterar um endpoint, service, composable, tipo de API ou tela, ou trocar um mock pela API real.
 ---
 
 # Integrar um recurso da API
@@ -16,8 +16,23 @@ Arquivos de apoio (leia quando o passo pedir):
   precisa existir antes de tudo (axios, proxy, erros, paginação).
 - [references/autenticacao.md](references/autenticacao.md) — login JWT,
   tokens, interceptors, sessão e guard de rota.
-- [references/modelos.md](references/modelos.md) — modelos de tipo, service,
-  composable e page de um CRUD. **É a referência de estilo.**
+- [references/modelos.md](references/modelos.md) — modelos genéricos de
+  tipo, service, composable, page e dialog. **É a referência de estilo**
+  para qualquer recurso.
+- `references/recursos/` — **contrato real da API e código que funcionou**
+  para cada recurso do curso. Se o recurso pedido estiver aqui, siga o
+  arquivo dele em vez de deduzir do Swagger:
+
+| Recurso pedido                                                | Arquivo                                                                 | Depende de   |
+| ------------------------------------------------------------- | ----------------------------------------------------------------------- | ------------ |
+| Categorias                                                    | [recursos/categorias.md](references/recursos/categorias.md)             | Autenticação |
+| Usuários (admin)                                              | [recursos/usuarios.md](references/recursos/usuarios.md)                 | Autenticação |
+| Clientes (admin)                                              | [recursos/clientes.md](references/recursos/clientes.md)                 | Autenticação |
+| Produtos, Estoque, indicadores do Dashboard e Cardápio do app | [recursos/produtos-estoque.md](references/recursos/produtos-estoque.md) | Categorias   |
+
+Ainda **não** há padrão do curso para Pedidos, Carrinho e Checkout. Se
+pedirem, avise isso, use `modelos.md` + o Swagger e pare para o aluno validar
+o contrato antes de escrever código.
 
 ## Ordem das etapas
 
@@ -28,11 +43,21 @@ projeto está e faça **só a etapa pedida** (ou a primeira que faltar):
 2. **Autenticação** — login, tokens, interceptors, guard. Feita uma vez,
    seguindo [references/autenticacao.md](references/autenticacao.md) na
    ordem que ele define, um passo testável por vez.
-3. **Recursos (CRUD)** — um por vez, pelo passo a passo abaixo.
+3. **Recursos** — um por vez, na ordem do curso: Categorias → Usuários →
+   Clientes → Produtos e Estoque. Para cada um, o arquivo de
+   `references/recursos/` + o passo a passo abaixo.
 
 Se o aluno pedir um CRUD de área protegida e a autenticação ainda não
 existir, **não integre o CRUD**: diga que falta a etapa 2 e ofereça fazê-la
-primeiro.
+primeiro. Do mesmo jeito, se o recurso depende de outro ainda não
+integrado (ex.: Produtos precisa de Categorias para o select), avise e
+ofereça integrar a dependência antes.
+
+**A tela já existe.** No projeto do aluno as pages, dialogs e componentes
+já foram feitos lendo mocks. Integrar = trocar a fonte de dados e ajustar
+campos e colunas ao contrato da API — **não recrie o layout**. Remova o que
+a API não suporta (ex.: botão de excluir, coluna sem dado) e diga o que foi
+removido e por quê.
 
 ## Arquitetura (quem faz o quê)
 
@@ -78,7 +103,11 @@ Use os nomes de rota que já existem no projeto.
    campos aceitos no POST/PATCH, se a listagem é paginada.
 2. **Types-first** (`src/types/<entidade>.ts`): a interface espelha o JSON
    **exatamente** — `snake_case`, `is_active`, ids `uuid` como `string`.
-   Sem mapper/tradução: o front se adapta à API. Crie também
+   Sem mapper/tradução: o front se adapta à API. **Única exceção:** quando a
+   API devolve dados aninhados que a tela mostra numa linha só (produto +
+   item + estoque), o composable monta um tipo de linha da tela
+   (`ProdutoCompleto`) — veja `recursos/produtos-estoque.md`. Não crie
+   outros tipos de tela sem necessidade parecida. Crie também
    `<Entidade>Input` com os campos aceitos na escrita. Rode o typecheck
    (`pnpm typecheck` / `vue-tsc --noEmit`): **cada erro é um item do
    checklist** da integração. Faça uma entidade por vez.
@@ -132,8 +161,9 @@ instalada no projeto — não confie na memória para a API do Quasar.
   do Swagger → mostre o que encontrou e pergunte, não invente campo.
 - A tarefa parece pedir Pinia para dados de uma única tela → proponha
   composable e explique o porquê.
-- A API exige mais de uma chamada para uma operação (ex.: criar admin =
-  POST + PATCH role) → faça no composable e comente o motivo.
+- A API exige mais de uma chamada para uma operação que não está em
+  `references/recursos/` → faça no composable, comente o motivo e mostre a
+  sequência de chamadas ao aluno.
 - A estrutura do projeto é muito diferente da descrita aqui (sem TypeScript,
   Options API, outro client HTTP) → descreva a diferença e pergunte antes.
 

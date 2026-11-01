@@ -5,9 +5,9 @@ Quasar 2 + Vue 3 + TypeScript com a API do curso.
 
 ## O que vem no plugin
 
-| Skill                 | Comando                             | Para que serve                                              |
-| --------------------- | ----------------------------------- | ----------------------------------------------------------- |
-| `quasar-integrar-api` | `/curso-quasar:quasar-integrar-api` | Base do axios, login JWT e CRUDs, sempre no padrão das aulas |
+| Skill                 | Comando                             | Para que serve                                                                                                                                 |
+| --------------------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `quasar-integrar-api` | `/curso-quasar:quasar-integrar-api` | Base do axios, login JWT e os recursos do curso (Categorias, Usuários, Clientes, Produtos e Estoque, Dashboard, Cardápio), no padrão das aulas |
 
 ## Instalar
 
@@ -65,7 +65,12 @@ plugins/curso-quasar/
    └─ references/
       ├─ infraestrutura.md
       ├─ autenticacao.md
-      └─ modelos.md
+      ├─ modelos.md
+      └─ recursos/        contrato da API + código de cada recurso do curso
+         ├─ categorias.md
+         ├─ usuarios.md
+         ├─ clientes.md
+         └─ produtos-estoque.md
 ```
 
 O plugin não declara `version`: cada commit no `main` já é uma versão nova

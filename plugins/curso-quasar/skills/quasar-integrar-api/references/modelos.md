@@ -173,6 +173,102 @@ async function onSave(data: FornecedorInput) {
 }
 ```
 
+## 5. Dialog de formulário — `src/components/backoffice/FornecedorFormDialog.vue`
+
+O dialog **não chama a API**: recebe o item (ou `null` = novo), emite
+`save` com o formulário e quem decide fechar é a page, só se a API aceitar.
+
+```vue
+<template>
+  <q-dialog v-model="modelValue" :persistent="saving">
+    <q-card style="width: 400px">
+      <q-card-section class="text-subtitle1">
+        {{ fornecedor ? 'Editar Fornecedor' : 'Novo Fornecedor' }}
+      </q-card-section>
+      <q-separator />
+      <q-form @submit="save">
+        <q-card-section class="q-gutter-md">
+          <q-input
+            v-model="form.name"
+            label="Nome"
+            outlined
+            dense
+            autofocus
+            :rules="[v => !!v.trim() || 'Informe o nome']"
+          />
+        </q-card-section>
+        <q-separator />
+        <q-card-actions align="right">
+          <q-btn
+            v-close-popup
+            flat
+            color="primary"
+            label="Cancelar"
+            :disable="saving"
+          />
+          <!-- Sem v-close-popup: quem fecha é a page, só se a API aceitar -->
+          <q-btn
+            type="submit"
+            unelevated
+            color="primary"
+            label="Salvar"
+            :loading="saving"
+          />
+        </q-card-actions>
+      </q-form>
+    </q-card>
+  </q-dialog>
+</template>
+
+<script setup lang="ts">
+import { reactive, watch } from 'vue'
+import type { Fornecedor, FornecedorInput } from '@/types/fornecedor'
+
+const modelValue = defineModel<boolean>({ required: true })
+const props = defineProps<{
+  fornecedor: Fornecedor | null
+  saving: boolean
+}>()
+const emit = defineEmits<{
+  save: [payload: FornecedorInput]
+}>()
+
+const form = reactive<FornecedorInput>({ name: '' })
+
+// Preenche ao ABRIR: vazio para novo, com os dados para editar
+watch(modelValue, open => {
+  if (!open) return
+  form.name = props.fornecedor?.name ?? ''
+})
+
+function save() {
+  emit('save', { ...form, name: form.name.trim() })
+}
+</script>
+```
+
+Na page:
+
+```vue
+<fornecedor-form-dialog
+  v-model="dialogOpen"
+  :fornecedor="editing"
+  :saving="saving"
+  @save="onSave"
+/>
+```
+
+Padrões dos campos que se repetem no curso:
+
+- Select de outra entidade: `:options="lista" option-label="name"
+option-value="id" emit-value map-options` (mostra o nome, guarda o id).
+- Valor da API com rótulo em português (ex.: `role`): constante
+  `{ label, value }[]` em `src/constants/` + `emit-value map-options`.
+- Máscara que a API recebe só com dígitos: `mask="###.###.###-##"` +
+  `unmasked-value`; formatar na tabela com `format` da coluna.
+- Número: `v-model.number` + `type="number"`; preço vai para a API com
+  `toFixed(2)` quando ela espera texto.
+
 ## Checklist final
 
 - [ ] Tipo espelha o JSON real (conferido no Swagger ou numa resposta real)
@@ -180,6 +276,7 @@ async function onSave(data: FornecedorInput) {
 - [ ] `ref`s fora da função no composable
 - [ ] Leitura → `error`; escrita → lança para a page
 - [ ] Todo `catch` da page usa `getErrorMessage`
+- [ ] Dialog só emite `save`; quem fecha é a page, depois que a API aceita
 - [ ] `pnpm typecheck` e `pnpm lint:check` sem erros
 - [ ] Testado no navegador: listar, paginar, criar, editar, ativar/desativar,
       erro de validação (ex.: nome repetido) mantém o dialog aberto
