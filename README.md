@@ -11,22 +11,20 @@ Quasar 2 + Vue 3 + TypeScript com a API do curso.
 
 ## Instalar
 
-Dentro do Claude Code, na pasta do seu projeto:
-
-```
-/plugin marketplace add Vuejs-Expert/curso-quasar-skills
-/plugin install curso-quasar@curso-quasar-skills
-```
-
-Ou pelo terminal, fora do Claude Code:
+No terminal, na **raiz do seu projeto** (fora do Claude Code). O escopo
+`project` deixa o plugin valendo só nesse projeto, registrado no
+`.claude/settings.json` dele:
 
 ```bash
-claude plugin marketplace add Vuejs-Expert/curso-quasar-skills
-claude plugin install curso-quasar@curso-quasar-skills
+claude plugin marketplace add Vuejs-Expert/curso-quasar-skills --scope project
+claude plugin install curso-quasar@curso-quasar-skills --scope project
 ```
 
-Depois, abra (ou reinicie) o Claude Code e digite `/curso-quasar:` para ver
-a skill.
+Depois, abra o Claude Code (ou rode `/reload-plugins`) e digite
+`/curso-quasar:` para ver a skill.
+
+Prefere que valha em todos os seus projetos? Use `--scope user` nos dois
+comandos.
 
 > **Erro de SSH ao adicionar o marketplace?** Se você não tem chave SSH do
 > GitHub configurada, rode antes `export CLAUDE_CODE_PLUGIN_PREFER_HTTPS=1`
