@@ -1,0 +1,14 @@
+{
+  "name": "curso-quasar-skills",
+  "description": "Skills do curso Vue.js Expert para projetos Quasar + Vue 3 + TypeScript",
+  "owner": {
+    "name": "Patrick Monteiro"
+  },
+  "plugins": [
+    {
+      "name": "curso-quasar",
+      "source": "./plugins/curso-quasar",
+      "description": "Integração com a API do curso: base do axios, login JWT e CRUDs no padrão das aulas"
+    }
+  ]
+}

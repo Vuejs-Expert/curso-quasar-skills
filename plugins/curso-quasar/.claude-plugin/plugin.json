@@ -1,0 +1,7 @@
+{
+  "name": "curso-quasar",
+  "description": "Integração com a API do curso Vue.js Expert: base do axios, login JWT e CRUDs no padrão das aulas",
+  "author": {
+    "name": "Patrick Monteiro"
+  }
+}
